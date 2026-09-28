@@ -4095,3 +4095,331 @@ button:disabled {
     margin-bottom: var(--s-6);
   }
 }
+
+/* ==========================================================================
+   Product tour
+   ========================================================================== */
+
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 180;
+}
+
+.tour__blocker {
+  position: absolute;
+  inset: 0;
+}
+
+/* The spotlight: a clear window whose giant shadow dims the rest of the page. */
+.tour__spot {
+  --tour-dim: rgba(12, 12, 28, 0.62);
+  position: fixed;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 200vmax var(--tour-dim);
+  pointer-events: none;
+  animation: fade-in 0.4s var(--ease-out);
+  transition:
+    top 0.55s var(--ease-out),
+    left 0.55s var(--ease-out),
+    width 0.55s var(--ease-out),
+    height 0.55s var(--ease-out);
+}
+
+:root[data-theme='dark'] .tour__spot {
+  --tour-dim: rgba(0, 0, 0, 0.72);
+}
+
+.tour__spot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 2px solid var(--accent);
+  border-radius: calc(var(--radius-lg) + 3px);
+  animation: tour-pulse 1.8s var(--ease-out) infinite;
+}
+
+.tour__spot.is-empty::after {
+  display: none;
+}
+
+@keyframes tour-pulse {
+  0% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+.tour__card {
+  position: fixed;
+  width: min(377px, calc(100vw - 2 * var(--s-4)));
+  border-radius: var(--radius-xl);
+  background: var(--canvas);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: tour-card-in 0.45s var(--ease-spring);
+  transition:
+    top 0.5s var(--ease-out),
+    left 0.5s var(--ease-out);
+}
+
+.tour__card:focus {
+  outline: none;
+}
+
+.tour__card--center {
+  top: 50%;
+  left: 50%;
+  width: min(480px, calc(100vw - 2 * var(--s-4)));
+  translate: -50% -50%;
+}
+
+.tour__card--wide {
+  width: min(610px, calc(100vw - 2 * var(--s-4)));
+}
+
+.tour__card--top,
+.tour__card--bottom {
+  left: var(--s-4);
+  right: var(--s-4);
+  width: auto;
+}
+
+.tour__card--top {
+  top: calc(var(--s-4) + env(safe-area-inset-top));
+}
+
+.tour__card--bottom {
+  bottom: calc(var(--s-4) + env(safe-area-inset-bottom));
+}
+
+@keyframes tour-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(13px) scale(0.97);
+  }
+}
+
+.tour__progress {
+  height: 3px;
+  background: var(--line);
+}
+
+.tour__progress span {
+  display: block;
+  height: 100%;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, var(--accent), #a5a5fa);
+  transition: width 0.5s var(--ease-out);
+}
+
+.tour__content {
+  max-height: min(55vh, 520px);
+  padding: var(--s-5) var(--s-5) 0;
+  overflow-y: auto;
+  animation: tour-step-in 0.4s var(--ease-out);
+}
+
+@keyframes tour-step-in {
+  from {
+    opacity: 0;
+    transform: translateX(13px);
+  }
+}
+
+.tour__head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.tour__icon {
+  display: grid;
+  place-items: center;
+  width: var(--control);
+  height: var(--control);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+  animation: pop 0.45s var(--ease-spring) 0.1s both;
+}
+
+.tour__count {
+  color: var(--text-3);
+  font-family: var(--font-heading);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.tour__close {
+  margin-left: auto;
+}
+
+.tour__title {
+  margin-top: var(--s-4);
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.tour__body {
+  margin-top: var(--s-3);
+  color: var(--text-2);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  line-height: var(--lh-body);
+}
+
+.tour__keys {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--sunken);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.tour__keys li,
+.tour__all li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  color: var(--text-2);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.tour__keys li {
+  animation: rise 0.35s var(--ease-out) both;
+}
+
+.tour__keys li:nth-child(2) {
+  animation-delay: 55ms;
+}
+.tour__keys li:nth-child(3) {
+  animation-delay: 89ms;
+}
+.tour__keys li:nth-child(4) {
+  animation-delay: 144ms;
+}
+
+.tour__combo {
+  display: inline-flex;
+  flex: none;
+  gap: var(--s-1);
+  min-width: 62px;
+}
+
+.tour__all {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3) var(--s-5);
+  margin-top: var(--s-4);
+  padding: var(--s-4);
+  border-radius: var(--radius);
+  background: var(--sunken);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.tour__all li {
+  font-size: var(--fs-xs);
+  animation: rise 0.35s var(--ease-out) both;
+}
+
+.tour__all li:nth-child(odd) {
+  animation-delay: 34ms;
+}
+
+.tour__all .tour__combo {
+  min-width: 72px;
+}
+
+.tour__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-5);
+}
+
+.tour__dots {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tour__dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line-strong);
+  transition:
+    width 0.3s var(--ease-out),
+    background-color 0.3s;
+}
+
+.tour__dots .is-done {
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.tour__dots .is-current {
+  width: var(--s-4);
+  background: var(--accent);
+}
+
+.tour__nav {
+  display: flex;
+  flex: none;
+  gap: var(--s-2);
+}
+
+.tour__next {
+  min-width: 89px;
+}
+
+@media (max-width: 610px) {
+  .tour__content {
+    max-height: 34vh;
+    padding: var(--s-4) var(--s-4) 0;
+  }
+
+  .tour__foot {
+    padding: var(--s-4);
+  }
+
+  .tour__all {
+    grid-template-columns: 1fr;
+  }
+
+  .tour__card--center {
+    width: calc(100vw - 2 * var(--s-4));
+  }
+
+  .tour__nav .btn {
+    height: 38px;
+  }
+}
+
+@media (max-width: 377px) {
+  .tour__dots {
+    display: none;
+  }
+
+  .tour__nav {
+    flex: 1;
+    justify-content: space-between;
+  }
+}

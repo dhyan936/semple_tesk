@@ -202,6 +202,9 @@ function buildSteps(firstName: string): TourStep[] {
 }
 
 const PAD = 8;
+/** Phones dock the card at the bottom and scroll targets to just under the top bar. */
+const PHONE = '(max-width: 610px)';
+const PHONE_SCROLL_MARGIN = 76;
 const GAP = 13;
 const MARGIN = 13;
 
@@ -259,7 +262,23 @@ export function Tour({ open, userName, onFinish, onSidebar }: TourProps) {
     const el = targetRef.current;
     if (!el || !el.isConnected) return setRect(null);
     const r = el.getBoundingClientRect();
-    setRect({ top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 });
+    let top = r.top - PAD;
+    let height = r.height + PAD * 2;
+    const card = cardRef.current;
+    if (card && matchMedia(PHONE).matches) {
+      // Dock the card on the side away from the target; targets pinned low (like the + button) get a top card.
+      const cardSpace = card.offsetHeight + MARGIN + GAP;
+      const dock = top + height > innerHeight - cardSpace && top > cardSpace ? 'top' : 'bottom';
+      setPos({ style: {}, dock });
+      // Trim a tall target so the spotlight never runs under the card.
+      if (dock === 'bottom') height = Math.max(Math.min(height, innerHeight - cardSpace - top), 34);
+      else {
+        const bottom = top + height;
+        top = Math.max(top, cardSpace);
+        height = Math.max(bottom - top, 34);
+      }
+    }
+    setRect({ top, left: r.left - PAD, width: r.width + PAD * 2, height });
   }, []);
 
   // Move to the step's target: open the drawer if needed, scroll it into view, then measure.
@@ -272,8 +291,14 @@ export function Tour({ open, userName, onFinish, onSidebar }: TourProps) {
     timers.push(
       window.setTimeout(
         () => {
-          targetRef.current = findTarget(step.target);
-          targetRef.current?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+          const el = (targetRef.current = findTarget(step.target));
+          if (el && matchMedia(PHONE).matches) {
+            el.style.scrollMarginTop = `${PHONE_SCROLL_MARGIN}px`;
+            el.scrollIntoView({ block: 'start', inline: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+            timers.push(window.setTimeout(() => (el.style.scrollMarginTop = ''), 600));
+          } else {
+            el?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+          }
           measure();
           timers.push(window.setTimeout(measure, 380));
         },
@@ -306,10 +331,7 @@ export function Tour({ open, userName, onFinish, onSidebar }: TourProps) {
     const vw = innerWidth;
     const vh = innerHeight;
     if (!rect) return setPos({ style: {}, dock: 'center' });
-    if (vw <= 610) {
-      const targetMid = rect.top + rect.height / 2;
-      return setPos({ style: {}, dock: targetMid > vh * 0.5 ? 'top' : 'bottom' });
-    }
+    if (matchMedia(PHONE).matches) return; // Docked by measure().
     const w = card.offsetWidth;
     const h = card.offsetHeight;
     const clampX = (x: number) => Math.max(MARGIN, Math.min(x, vw - w - MARGIN));

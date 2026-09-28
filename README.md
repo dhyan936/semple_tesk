@@ -7,6 +7,7 @@ Built with React, TypeScript and Vite. There is no backend: data lives in the br
 ## Features
 
 - **Accounts:** sign in or create an account. You stay signed in after a refresh (and after closing the browser when "Keep me signed in" is ticked). Each account has its own tasks, projects and teams. Accounts live in this browser only: passwords are stored as salted PBKDF2 hashes, never as plain text, but without a server this keeps people's data apart on a shared device rather than acting as real security.
+- **Product tour:** the first time someone signs in, a 15-step animated tour spotlights every feature with a short description and its keyboard shortcuts, ending with a list of every shortcut. Arrow keys step through it and Esc skips it. It can be replayed from **Product tour** in the sidebar, and it adapts to phones (the card docks to the top or bottom and the menu opens for sidebar steps).
 - **Tasks:** add, edit, delete (with confirmation and undo), complete or reopen from the list. Each task has a title, description, due date, priority, status, project and created time.
 - **Projects:** create, rename (with a color), delete. Each project shows its task count. Deleting a project keeps its tasks and moves them to "No project".
 - **Teams:** create teams, add or remove members, and assign any task to anyone on a team. Each team has its own page, and removing a member or team keeps their tasks and unassigns them.
